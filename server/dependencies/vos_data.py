@@ -66,7 +66,7 @@ async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
             if not span:
                 continue
 
-            title = span.text.strip('\n \t').split('.')[1].strip('\n \t')
+            title = ".".join(span.text.strip('\n \t').split('.')[1:]).strip('\n \t')
             if title == 'ru':
                 continue
 
@@ -162,7 +162,7 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
             if not span:
                 continue
 
-            title = span.text.strip('\n \t').split('.')[1].strip('\n \t')
+            title = ".".join(span.text.strip('\n \t').split('.')[1:]).strip('\n \t')
             if title == 'ru':
                 continue
 

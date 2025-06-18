@@ -9,6 +9,10 @@ class Event(SqlAlchemyBase):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     title = Column(String, nullable=False)
+    subject = Column(String, nullable=True)
+    code = Column(String, nullable=True)
+    rsosh_level = Column(Integer, nullable=True)
+    stage = Column(String, nullable=True)
     year = Column(Integer, nullable=False)
     extra = Column(Text, nullable=True)
 

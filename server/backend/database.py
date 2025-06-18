@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 from dotenv import load_dotenv
 
 from sqlalchemy import orm, create_engine
@@ -24,5 +25,18 @@ from server.models import __all_models
 SqlAlchemyBase.metadata.create_all(engine)
 
 
+@contextmanager
 def get_session() -> Session:
-    return SessionLocal()
+    session = SessionLocal()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+def create_db():
+    pass

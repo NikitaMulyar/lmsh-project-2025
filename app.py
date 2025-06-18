@@ -1,7 +1,9 @@
+import asyncio
+
 from flask import Flask
 
-from server.backend.database import get_session
-
+from server.backend.database import create_db
+from server.dependencies import prepare_data
 
 app = Flask(__name__)
 
@@ -12,6 +14,6 @@ def hello_world():  # put application's code here
 
 
 if __name__ == '__main__':
-    session = get_session()
-    session.close()
+    create_db()
+    asyncio.run(prepare_data())
     app.run()

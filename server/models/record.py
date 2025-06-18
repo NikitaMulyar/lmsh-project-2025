@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, ForeignKey, orm
+from sqlalchemy import Column, String, Integer, Text, ForeignKey, orm
 from server.backend.database import SqlAlchemyBase
 
 
@@ -11,6 +11,8 @@ class Record(SqlAlchemyBase):
     user_id = Column(String, ForeignKey("users.id"))
     event_id = Column(String, ForeignKey("events.id"))
     status = Column(String, nullable=True)
+    points = Column(Integer, nullable=True)
+    extra = Column(Text, nullable=True)
 
     user = orm.relationship("User", back_populates="records")
     event = orm.relationship("Event", back_populates="records")
