@@ -1,8 +1,4 @@
-from sqlalchemy.orm import joinedload
-
 from server.models.event import Event
-from server.models.user import User
-from server.models.record import Record
 
 from server.backend.database import get_session
 
@@ -17,3 +13,18 @@ def create_event(title: str, subject: str | None, code: str | None,
         session.add(event)
         session.commit()
         return event
+
+
+def get_vos_finals_subjects_list(year: int) -> list[str]:
+    with get_session() as session:
+        query = session.query(
+            Event.subject
+        ).filter(
+            Event.year == year,
+            Event.code == 'ЗЭ ВСОШ'
+        ).order_by(
+            Event.subject
+        )
+
+        records = [i[0] for i in query.all()]
+        return records
