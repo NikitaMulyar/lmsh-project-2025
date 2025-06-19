@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2Stats - Образовательная статистика</title>
+    <link rel="stylesheet" href="/static/css/main.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        dark: '#1e293b',
+                        header: '#0c4a6e'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<!-- Шапка с логотипом и навигацией -->
+<header class="header-gradient py-4">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-around items-center">
+
+            <!-- Логотип с иконкой -->
+            <div class="logo-container mb-4 md:mb-0">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line text-white text-xl"></i>
+                </div>
+                <div class="logo-text">L2Stats</div>
+            </div>
+
+            <!-- Навигационное меню -->
+            <nav>
+                <ul class="flex flex-wrap justify-center gap-2 md:gap-3">
+
+                    <!-- ВсОШ -->
+                    <li class="nav-item">
+                        <div class="nav-button-wrapper">
+                            <button class="nav-button">
+                                <span>ВсОШ</span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="dropdown-wrapper">
+                            <div class="dropdown">
+                                <!-- Года с подменю -->
+                                {% set stages = [['Заключительный', 'finals'],
+                                                ['Региональный', 'region'],
+                                                ['Муниципальный', 'municip'],
+                                                ['Школьный', 'school'],
+                                                ['Пригласительный', 'invite']] %}
+                                {% for year in range(2025, 2020, -1) %}
+                                    <div class="year-item">
+                                        <div class="menu-item">
+                                            <span class="menu-item-text">{{ year }}</span>
+                                            <i class="fas fa-chevron-right text-xs"></i>
+                                        </div>
+                                        <div class="sub-dropdown-wrapper">
+                                            <div class="sub-dropdown">
+                                                {% for stage in stages %}
+                                                    <a href="/vos/{{ stage[1] }}/{{ year }}?index=fio" class="menu-item">
+                                                        <span>{{ stage[0] }}</span>
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Остальные -->
+                    {% set categories = [['РСОШ', 'rsosh'],
+                                        ['ЕГЭ', 'ege'],
+                                        ['ОГЭ', 'oge'],
+                                        ['Прочее', 'other']] %}
+                    {% for cat in categories %}
+                        <li class="nav-item">
+                            <div class="nav-button-wrapper">
+                                <button class="nav-button">
+                                    <span>{{ cat[0] }}</span>
+                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="dropdown-wrapper">
+                                <div class="dropdown">
+                                    {% for year in range(2025, 2020, -1) %}
+                                        <a href="/{{ cat[1] }}/{{ year }}" class="menu-item">
+                                            <span>{{ year }}</span>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

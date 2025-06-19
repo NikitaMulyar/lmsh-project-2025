@@ -6,11 +6,13 @@ from server.api.user import user_api
 from server.api.vos_data import vos_data_api
 from server.backend.database import create_db
 from server.dependencies import prepare_data
+from server.routes import main
 
 
 app = Flask(__name__)
 app.register_blueprint(vos_data_api)
 app.register_blueprint(user_api)
+app.register_blueprint(main)
 
 
 if __name__ == '__main__':
