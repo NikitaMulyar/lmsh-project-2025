@@ -22,7 +22,7 @@ async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
                 console.print(
                     Panel.fit(
                         f"[bold green]Успешно[/bold green]\n"
-                        f"[green]Участники - {year} год[/green]",
+                        f"[green]Участники - ЗЭ ВсОШ {year} год[/green]",
                         title="[green]Статус[/green]",
                         border_style="green"
                     )
@@ -32,7 +32,7 @@ async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
                 console.print(
                     Panel.fit(
                         f"[bold yellow]Ошибка[/bold yellow]\n"
-                        f"[yellow]Участники - {year} год\n"
+                        f"[yellow]Участники - ЗЭ ВсОШ {year} год\n"
                         f"Повторная попытка...[/yellow]",
                         title="[yellow]Статус[/yellow]",
                         border_style="yellow"
@@ -44,11 +44,14 @@ async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
             console.print(
                 Panel.fit(
                     f"[bold red]Не удалось получить данные[/bold red]\n"
-                    f"[red]Участники - {year} год[/red]",
+                    f"[red]Участники - ЗЭ ВсОШ {year} год[/red]",
                     title="[red]Статус[/red]",
                     border_style="red"
                 )
             )
+            file = open(f'data/vos/finals/teams_{year}.json', mode='w')
+            json.dump([], file, ensure_ascii=False, indent=4)
+            file.close()
             return
 
         soup = bs4.BeautifulSoup(result.text
@@ -98,7 +101,7 @@ async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
             parsed_data.append(data)
 
     if not return_l2sh_only:
-        file = open(f'data/vos/teams_{year}.json', mode='w')
+        file = open(f'data/vos/finals/teams_{year}.json', mode='w')
         json.dump(parsed_data, file, ensure_ascii=False, indent=4)
         file.close()
 
@@ -118,7 +121,7 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
                 console.print(
                     Panel.fit(
                         f"[bold green]Успешно[/bold green]\n"
-                        f"[green]ПиПы - {year} год[/green]",
+                        f"[green]ПиПы - ЗЭ ВсОШ {year} год[/green]",
                         title="[green]Статус[/green]",
                         border_style="green"
                     )
@@ -128,7 +131,7 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
                 console.print(
                     Panel.fit(
                         f"[bold yellow]Ошибка[/bold yellow]\n"
-                        f"[yellow]ПиПы - {year} год\n"
+                        f"[yellow]ПиПы - ЗЭ ВсОШ {year} год\n"
                         f"Повторная попытка...[/yellow]",
                         title="[yellow]Статус[/yellow]",
                         border_style="yellow"
@@ -140,11 +143,14 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
             console.print(
                 Panel.fit(
                     f"[bold red]Не удалось получить данные[/bold red]\n"
-                    f"[red]ПиПы - {year} год[/red]",
+                    f"[red]ПиПы - ЗЭ ВсОШ {year} год[/red]",
                     title="[red]Статус[/red]",
                     border_style="red"
                 )
             )
+            file = open(f'data/vos/finals/results_{year}.json', mode='w')
+            json.dump([], file, ensure_ascii=False, indent=4)
+            file.close()
             return
 
         soup = bs4.BeautifulSoup(result.text
@@ -215,7 +221,7 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
             parsed_data.append(data)
 
     if not return_l2sh_only:
-        file = open(f'data/vos/results_{year}.json', mode='w')
+        file = open(f'data/vos/finals/results_{year}.json', mode='w')
         json.dump(parsed_data, file, ensure_ascii=False, indent=4)
         file.close()
 

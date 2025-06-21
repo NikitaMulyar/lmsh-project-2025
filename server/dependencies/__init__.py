@@ -19,6 +19,9 @@ if not os.path.exists('data/'):
 if not os.path.exists('data/vos/'):
     os.mkdir('data/vos/')
 
+if not os.path.exists('data/vos/finals/'):
+    os.mkdir('data/vos/finals/')
+
 
 async def save_vos_finals_data(year_start, year_end):
     tasks = []
@@ -30,11 +33,12 @@ async def save_vos_finals_data(year_start, year_end):
 
 async def fill_database_vos_finals_data(year_start, year_end):
     console = Console()
+    events_rsosh_levels = json.load(open('static/json/events_rsosh_levels.json', mode='rb'))
 
     statuses = {}
     for year in range(year_start, year_end + 1):
         statuses[year] = {}
-        results = json.load(open(f'data/vos/results_{year}.json', mode='rb'))
+        results = json.load(open(f'data/vos/finals/results_{year}.json', mode='rb'))
         for subject in results:
             statuses[year][subject['title']] = {}
             for number in subject['pobed']:
@@ -45,11 +49,14 @@ async def fill_database_vos_finals_data(year_start, year_end):
                     statuses[year][subject['title']][student[0]] = 'priz'
 
     for year in range(year_start, year_end + 1):
-        teams = json.load(open(f'data/vos/teams_{year}.json', mode='rb'))
+        teams = json.load(open(f'data/vos/finals/teams_{year}.json', mode='rb'))
         for subject in teams:
             event = create_event(f'ЗЭ ВсОШ {year} по {subject['title']}',
-                                 subject['title'], 'ЗЭ ВСОШ', -100,
-                                 year, None, 'Заключительный этап')
+                                 subject['title'], events_rsosh_levels['ЗЭ ВсОШ'],
+                                 year, None,
+                                 'ВсОШ', 'ЗЭ ВсОШ',
+                                 'ЗЭ', 'Заключительный',
+                                 'vos', 'finals')
             for number in subject['team']:
                 for student in subject['team'][number]:
                     if 'лицей' in student[1].lower() \
@@ -72,7 +79,7 @@ async def fill_database_vos_finals_data(year_start, year_end):
         console.print(
             Panel.fit(
                 f"[bold green]Успешное добавление в БД[/bold green]\n"
-                f"[green]Участники и ПиПы Л2Ш - {year} год[/green]",
+                f"[green]Участники и ПиПы Л2Ш - ЗЭ ВсОШ {year} год[/green]",
                 title="[green]Статус[/green]",
                 border_style="green"
             )

@@ -55,6 +55,10 @@
     margin-bottom: 25px;
 }
 
+.form-group-2 {
+    min-width: 48%;
+}
+
 .form-label {
     display: block;
     margin-bottom: 10px;
@@ -617,4 +621,9 @@ select.form-input {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
+}
+
+#two-fields-form {
+    display: flex;
+    justify-content: space-between;
 }

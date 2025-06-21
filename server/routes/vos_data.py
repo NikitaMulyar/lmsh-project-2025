@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, request, redirect
+import json
+import os
 
-from server.forms.vos_filters import FilterVosFinals
+from flask import Blueprint, render_template
+
+from server.forms.vos_filters import FilterVos
 
 import requests
 
@@ -8,19 +11,21 @@ import requests
 vos_data = Blueprint('vos_data', __name__, url_prefix='/vos')
 
 
-@vos_data.route('/finals/<int:year>', methods=['GET', 'POST'])
-def vos_finals_table(year: int):
+@vos_data.route('/<stage>/<int:year>', methods=['GET', 'POST'])
+def vos_table(stage: str, year: int):
     subjects = requests.get(
-        f'http://127.0.0.1:5000/api/vos/subjects/finals/{year}'
+        f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/subjects/{stage}/{year}'
     ).json()
     for i in range(len(subjects)):
         subjects[i] = [subjects[i], subjects[i]]
 
     year_stats = requests.get(
-        f'http://127.0.0.1:5000/api/vos/stats/finals/{year}'
+        f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/stats/{stage}/{year}'
     ).json()
 
-    form = FilterVosFinals()
+    stage_ru = json.load(open('static/json/vos/stages.json', mode='rb'))[stage]
+
+    form = FilterVos()
     form.subjects.choices = subjects
     if form.index.data is None:
         form.index.data = 'fio'
@@ -29,19 +34,21 @@ def vos_finals_table(year: int):
 
     if form.validate_on_submit():
         students = requests.get(
-            f'http://127.0.0.1:5000/api/vos/finals/{year}?index={form.index.data}',
+            f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/{stage}/{year}?index={form.index.data}',
             json={'statuses': form.statuses.data,
                   'numbers': form.numbers.data,
                   'subjects': form.subjects.data
                   }
         ).json()
 
-        return render_template('vos/finals.html', form=form,
+        return render_template('vos.html', form=form,
                                title=f'Заключительный этап ВсОШ',
                                table_index=form.index.data,
-                               year_stats=year_stats, year=year, students=students)
+                               year_stats=year_stats, YEAR=year, STAGE=stage_ru,
+                               students=students)
 
-    return render_template('vos/finals.html', form=form,
+    return render_template('vos.html', form=form,
                            title=f'Заключительный этап ВсОШ',
                            table_index=form.index.data,
-                           year_stats=year_stats, year=year, students=students)
+                           year_stats=year_stats, YEAR=year, STAGE=stage_ru,
+                           students=students)

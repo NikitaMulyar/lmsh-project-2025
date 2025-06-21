@@ -30,8 +30,8 @@ def get_user_by_id(id: str) -> User | None:
         return user
 
 
-def get_filtered_users_vos_finals(year: int, statuses: list[str],
-                                  numbers: list[int], subjects: list[str]) \
+def get_filtered_users_vos(year: int, stage: str, statuses: list[str],
+                           numbers: list[int], subjects: list[str]) \
         -> list[list[str, str, int, int, int, int, str, int, str]]:
     # id, ФИО, Год выпуска, Участие, Дипломы, Победитель, <список предметов побед.>, Призер, <список предметов приз.>
     with get_session() as session:
@@ -77,7 +77,8 @@ def get_filtered_users_vos_finals(year: int, statuses: list[str],
             priz, func.group_concat(condition_priz_subjects, '$$')
         ).join(User).join(Event).filter(
             Event.year == year,
-            Event.code == 'ЗЭ ВСОШ'
+            Event.english_stage_code == stage,
+            Event.olymp == 'ЗЭ ВсОШ'
         )
 
         if len(subjects) > 0:

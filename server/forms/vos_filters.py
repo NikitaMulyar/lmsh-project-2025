@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 from wtforms.widgets import ListWidget, CheckboxInput
 
 
-class FilterVosFinals(FlaskForm):
+class FilterVos(FlaskForm):
     statuses = SelectMultipleField('Статусы',
         widget=ListWidget(prefix_label=False),
         option_widget=CheckboxInput(),

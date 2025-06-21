@@ -1,57 +1,59 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <link rel="stylesheet" href="/static/css/vos/finals.css"/>
+    <link rel="stylesheet" href="/static/css/vos.css"/>
     <div class="form-container">
         <div class="form-header">
-            <h2>{{ title }} {{ year }}</h2>
+            <h2>{{ STAGE }} этап ВсОШ {{ YEAR }}</h2>
             <p>Выберите нужные фильтры для получения данных</p>
         </div>
 
         <form method="POST">
             {{ form.hidden_tag() }}
 
-            <!-- Поле 1: SelectMultipleField -->
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-id-card-clip"></i>
-                    {{ form.statuses.label }}
-                </label>
-                <div class="multiselect-container">
-                    <div class="multiselect-group">
-                        <div class="multiselect-options">
-                            {% for subfield in form.statuses %}
-                                <div class="multiselect-option">
-                                    {{ subfield }}
-                                    {{ subfield.label }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Поле 2: SelectMultipleField -->
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-school"></i>
-                    {{ form.numbers.label }}
-                </label>
-                <div class="multiselect-container">
-                    {% for i in range(0, form.numbers.choices|length, 3) %}
+            <div id="two-fields-form">
+                <!-- Поле 1: SelectMultipleField -->
+                <div class="form-group form-group-2">
+                    <label class="form-label">
+                        <i class="fas fa-id-card-clip"></i>
+                        {{ form.statuses.label }}
+                    </label>
+                    <div class="multiselect-container">
                         <div class="multiselect-group">
                             <div class="multiselect-options">
-                                {% for subfield in form.numbers %}
-                                    {% if i <= loop.index0 and loop.index0 < i + 3 %}
-                                        <div class="multiselect-option">
-                                            {{ subfield }}
-                                            {{ subfield.label }}
-                                        </div>
-                                    {% endif %}
+                                {% for subfield in form.statuses %}
+                                    <div class="multiselect-option">
+                                        {{ subfield }}
+                                        {{ subfield.label }}
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Поле 2: SelectMultipleField -->
+                <div class="form-group form-group-2">
+                    <label class="form-label">
+                        <i class="fas fa-school"></i>
+                        {{ form.numbers.label }}
+                    </label>
+                    <div class="multiselect-container">
+                        {% for i in range(0, form.numbers.choices|length, 3) %}
+                            <div class="multiselect-group">
+                                <div class="multiselect-options">
+                                    {% for subfield in form.numbers %}
+                                        {% if i <= loop.index0 and loop.index0 < i + 3 %}
+                                            <div class="multiselect-option">
+                                                {{ subfield }}
+                                                {{ subfield.label }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
 

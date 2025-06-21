@@ -11,4 +11,9 @@ def main_page():
 
 @main.errorhandler(404)
 def not_found(e):
-    return render_template("404.html")
+    return render_template("errors/404.html")
+
+
+@main.errorhandler(400)
+def bad_request(e):
+    return render_template("errors/400.html")

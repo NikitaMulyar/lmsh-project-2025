@@ -17,7 +17,7 @@ def create_record(user_id: str, event_id: str, status: str | None,
         return record
 
 
-def get_vos_finals_stats(year: int) -> list[int, int, int, int]:
+def get_vos_stats(year: int, stage: str) -> list[int, int, int, int]:
     with get_session() as session:
         part = func.count(case((Record.status.in_(["Участник", "Призер", "Победитель"]), 1)))
         diploms = func.count(case((Record.status.in_(["Призер", "Победитель"]), 1)))
@@ -28,15 +28,16 @@ def get_vos_finals_stats(year: int) -> list[int, int, int, int]:
             part, diploms, pobed, priz
         ).join(User).join(Event).filter(
             Event.year == year,
-            Event.code == 'ЗЭ ВСОШ'
+            Event.english_stage_code == stage,
+            Event.olymp == 'ЗЭ ВсОШ'
         ).group_by(Event.year)
 
         records = query.all()
-        return list(records[0])
+        return list(records[0]) if len(records) == 1 else [0, 0, 0, 0]
 
 
-def get_filtered_subjects_vos_finals(year: int, statuses: list[str],
-                                     numbers: list[int], subjects: list[str]) \
+def get_filtered_subjects_vos(year: int, stage: str, statuses: list[str],
+                              numbers: list[int], subjects: list[str]) \
         -> list[list[str, int, int, int, int]]:
     # Предмет, Участие, Дипломы, Победитель, Призер
     with get_session() as session:
@@ -61,7 +62,8 @@ def get_filtered_subjects_vos_finals(year: int, statuses: list[str],
             part, diploms, pobed, priz
         ).join(User).join(Event).filter(
             Event.year == year,
-            Event.code == 'ЗЭ ВСОШ'
+            Event.english_stage_code == stage,
+            Event.olymp == 'ЗЭ ВсОШ'
         )
 
         if len(subjects) > 0:
