@@ -18,21 +18,17 @@ def vos_finals_info(year: int):
     except Exception:
         data = {}
 
-    try:
-        if request.args['index'] == 'fio':
-            res = get_filtered_users_vos_finals(year,
-                                                data.get('statuses', []),
-                                                data.get('numbers', []),
-                                                data.get('subjects', []))
-        else:
-            res = get_filtered_subjects_vos_finals(year,
-                                                   data.get('statuses', []),
-                                                   data.get('numbers', []),
-                                                   data.get('subjects', []))
-        return jsonify(res), 200
-    except Exception as e:
-        return jsonify({'message': 'Некорректный запрос',
-                        'details': e.__str__()}), 400
+    if request.args['index'] == 'fio':
+        res = get_filtered_users_vos_finals(year,
+                                            data.get('statuses', []),
+                                            data.get('numbers', []),
+                                            data.get('subjects', []))
+    else:
+        res = get_filtered_subjects_vos_finals(year,
+                                               data.get('statuses', []),
+                                               data.get('numbers', []),
+                                               data.get('subjects', []))
+    return jsonify(res), 200
 
 
 @vos_data_api.route('/stats/finals/<int:year>', methods=['GET'])

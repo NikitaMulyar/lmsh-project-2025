@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 
 from server.forms.vos_filters import FilterVosFinals
 
@@ -22,26 +22,26 @@ def vos_finals_table(year: int):
 
     form = FilterVosFinals()
     form.subjects.choices = subjects
-    form.index.data = 'fio'
+    if form.index.data is None:
+        form.index.data = 'fio'
 
     students = []
 
     if form.validate_on_submit():
-        if request.args.get('index') in ['fio', 'subject']:
-            students = requests.get(
-                f'http://127.0.0.1:5000/api/vos/finals/{year}?index={request.args['index']}',
-                json={'statuses': form.statuses.data,
-                      'numbers': form.numbers.data,
-                      'subjects': form.subjects.data
-                      }
-            ).json()
+        students = requests.get(
+            f'http://127.0.0.1:5000/api/vos/finals/{year}?index={form.index.data}',
+            json={'statuses': form.statuses.data,
+                  'numbers': form.numbers.data,
+                  'subjects': form.subjects.data
+                  }
+        ).json()
 
         return render_template('vos/finals.html', form=form,
                                title=f'Заключительный этап ВсОШ',
-                               table_index=request.args.get('index'),
+                               table_index=form.index.data,
                                year_stats=year_stats, year=year, students=students)
 
     return render_template('vos/finals.html', form=form,
                            title=f'Заключительный этап ВсОШ',
-                           table_index=request.args.get('index'),
+                           table_index=form.index.data,
                            year_stats=year_stats, year=year, students=students)

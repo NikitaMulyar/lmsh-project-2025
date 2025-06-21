@@ -60,7 +60,7 @@
     margin-bottom: 10px;
     font-weight: 600;
     color: #cbd5e1;
-    font-size: 1rem;
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
 }
@@ -311,7 +311,7 @@ select.form-input {
 .table-container {
     margin: auto;
     width: 100%;
-    max-width: 95%;
+    max-width: 90%;
     margin-top: 1em;
     background: rgba(30, 41, 59, 0.7);
     backdrop-filter: blur(10px);
@@ -414,7 +414,7 @@ select.form-input {
 }
 
 .stat-value {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
     background: linear-gradient(to right, #38bdf8, #818cf8);
     -webkit-background-clip: text;
@@ -424,7 +424,7 @@ select.form-input {
 
 .stat-label {
     color: #94a3b8;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
 }
 
 .table-wrapper {
@@ -481,17 +481,33 @@ select.form-input {
     color: #10b981;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 0.85rem;
     font-weight: 500;
 }
 
 .prize-badge {
     display: inline-block;
-    background: rgba(139, 92, 246, 0.15);
-    color: #8b5cf6;
+    background: rgba(150, 111, 239, 0.15);
+    color: #ab94e4;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.winner-badge-2 {
+    display: inline-block;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.prize-badge-2 {
+    display: inline-block;
+    background: rgba(150, 111, 239, 0.15);
+    color: #ab94e4;
+    padding: 6px 12px;
+    border-radius: 20px;
     font-weight: 500;
 }
 
@@ -502,7 +518,7 @@ select.form-input {
     width: 30px;
     height: 30px;
     background: rgba(245, 158, 11, 0.15);
-    color: #f59e0b;
+    color: #f6b13a;
     border-radius: 50%;
     font-weight: 600;
 }
@@ -513,8 +529,8 @@ select.form-input {
     justify-content: center;
     width: 30px;
     height: 30px;
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
+    background: rgba(79, 141, 243, 0.15);
+    color: #6d9eef;
     border-radius: 50%;
     font-weight: 600;
 }

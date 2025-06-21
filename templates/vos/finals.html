@@ -175,9 +175,47 @@
                     </tbody>
                 </table>
             </div>
-            <div class="font-medium" style="margin-top: 1em;">Записей: {{ students|length }}</div>
-        {% elif table_index == 'subject' %}
+        {% else %}
+            <div class="table-wrapper">
+                <table class="participants-table">
+                    <thead>
+                    <tr>
+                        <th>Предмет</th>
+                        <th>Участники</th>
+                        <th>Дипломы</th>
+                        <th>Победители</th>
+                        <th>Призеры</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for subject in students %}
+                        <tr>
+                            <td>
+                                <div class="font-medium">{{ subject[0] }}</div>
+                            </td>
+                            <td>
+                                <div class="participation-count">{{ subject[1] }}</div>
+                            </td>
+                            <td>
+                                <div class="diploma-count">{{ subject[2] }}</div>
+                            </td>
+                            <td>
+                                <div class="winner-badge-2">
+                                    <i class="fas fa-trophy mr-1"></i> {{ subject[3] }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="prize-badge-2">
+                                    <i class="fas fa-medal mr-1"></i> {{ subject[4] }}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
+        <div class="font-medium" style="margin-top: 1em;">Записей: {{ students|length }}</div>
     </div>
 
 {% endblock %}
