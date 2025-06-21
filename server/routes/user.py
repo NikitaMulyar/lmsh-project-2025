@@ -5,6 +5,8 @@ from flask import Blueprint, render_template
 import requests
 
 
+# Блюпринт для эндпоинтов, которые отвечают за фронтенд юзера. Все взаимодействие через API строится на отправке
+# запросов на блюпринты API
 user_data = Blueprint('user_data', __name__, url_prefix='/user')
 
 

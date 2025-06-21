@@ -17,7 +17,7 @@ def vos_table(stage: str, year: int):
         f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/subjects/{stage}/{year}'
     ).json()
     for i in range(len(subjects)):
-        subjects[i] = [subjects[i], subjects[i]]
+        subjects[i] = (subjects[i], subjects[i])  # Дублирование для формы
 
     year_stats = requests.get(
         f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/stats/{stage}/{year}'
@@ -30,22 +30,13 @@ def vos_table(stage: str, year: int):
     if form.index.data is None:
         form.index.data = 'fio'
 
-    students = []
-
-    if form.validate_on_submit():
-        students = requests.get(
-            f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/{stage}/{year}?index={form.index.data}',
-            json={'statuses': form.statuses.data,
-                  'numbers': form.numbers.data,
-                  'subjects': form.subjects.data
-                  }
-        ).json()
-
-        return render_template('vos.html', form=form,
-                               title=f'Заключительный этап ВсОШ',
-                               table_index=form.index.data,
-                               year_stats=year_stats, YEAR=year, STAGE=stage_ru,
-                               students=students)
+    students = requests.get(
+        f'http://{os.getenv('HOST')}:{os.getenv('PORT')}/api/vos/{stage}/{year}?index={form.index.data}',
+        json={'statuses': form.statuses.data if form.statuses.data else [],
+              'numbers': form.numbers.data if form.numbers.data else [],
+              'subjects': form.subjects.data if form.subjects.data else []
+              }
+    ).json()
 
     return render_template('vos.html', form=form,
                            title=f'Заключительный этап ВсОШ',

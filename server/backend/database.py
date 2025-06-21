@@ -16,6 +16,10 @@ SessionLocal = None
 
 
 def create_db():
+    """
+    Глобально инициализирует базу данных и создает фабрику сессий.
+    :return:
+    """
     global SessionLocal
 
     load_dotenv()
@@ -33,6 +37,10 @@ def create_db():
 
 @contextmanager
 def get_session() -> Session:
+    """
+    Создает сессию SQLAlchemy. Вызывается при помощи `with get_session() as session:`
+    :return: объект сессии
+    """
     session = SessionLocal()
     try:
         yield session

@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template
 
 
+# Блюпринт для эндпоинтов, которые отвечают за фронтенд. Все взаимодействие через API строится на отправке запросов
+# на блюпринты API
 main = Blueprint('main', __name__)
 
 

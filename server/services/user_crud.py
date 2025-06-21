@@ -11,6 +11,13 @@ from sqlalchemy.sql.functions import coalesce
 
 
 def create_user(fio: str, graduate_year: int, profile: str | None) -> User:
+    """
+    Создание юзера и добавление в базу данных
+    :param fio:
+    :param graduate_year:
+    :param profile:
+    :return: модель SQLAlchemy класса ``User``
+    """
     with get_session() as session:
         user = User(fio=fio, graduate_year=graduate_year, profile=profile)
         session.add(user)
@@ -19,6 +26,11 @@ def create_user(fio: str, graduate_year: int, profile: str | None) -> User:
 
 
 def get_user_by_fio(fio: str) -> User | None:
+    """
+    Получение юзера по ФИО (строгое совпадение)
+    :param fio:
+    :return: модель SQLAlchemy класса ``User``
+    """
     with get_session() as session:
         user = session.query(User).where(User.fio == fio)\
             .options(joinedload(User.records).joinedload(Record.event)).first()
@@ -26,6 +38,11 @@ def get_user_by_fio(fio: str) -> User | None:
 
 
 def get_user_by_id(id: str) -> User | None:
+    """
+    Получение юзера по id
+    :param id:
+    :return: модель SQLAlchemy класса ``User``
+    """
     with get_session() as session:
         user = session.query(User).where(User.id == id)\
             .options(joinedload(User.records).joinedload(Record.event)).first()
@@ -34,16 +51,39 @@ def get_user_by_id(id: str) -> User | None:
 
 def get_filtered_users_vos(year: int, stage: str, statuses: list[str],
                            numbers: list[int], subjects: list[str]) \
-        -> list[list[str, str, int, int, int, int, str, int, str]]:
-    # id, ФИО, Год выпуска, Участие, Дипломы, Победитель, <список предметов побед.>, Призер, <список предметов приз.>
+        -> list[list[str, str, int, int, int, int, list[str], int, list[str]]]:
+    """
+    Подсчитывается статистика ВсОШ.
+
+    Возвращается список. Элемент списка - список вида
+
+    id (str),
+    ФИО (str),
+    год выпуска (int),
+    кол-во участий (int),
+    кол-во дипломов (int),
+    кол-во побед (int),
+    <отсортированный в алфавитном порядке список редметов со статусом 'Победитель'> (list[str]),
+    кол-во призерств (int),
+    <отсортированный в алфавитном порядке список предметов со статусом 'Призер'> (list[str])
+
+    :param year: год ВсОШ. От 2021 до 2025
+    :param stage: этап ВсОШ. Один из ``['finals', 'region', 'municip', 'school', 'invite']``
+    :param statuses: список, который может быть либо пустым, либо содержать значения ``['Участник', 'Призер', 'Победитель']`` (каждое из них либо есть, либо нет)
+    :param numbers: список, который может быть либо пустым, либо содержать значения ``[6, 7, 8, 9, 10, 11]`` (каждое из них либо есть, либо нет)
+    :param subjects: список, который может быть либо пустым, либо содержать названия предметов (важно: каждое значение должно быть уникальным)
+    :return: Список списков
+    """
     with get_session() as session:
         graduate_years = [year + 11 - number for number in numbers]
 
+        # Выражения для подсчета количества участия, дипломов, побед и призерств у человека
         part = func.count(case((Record.status.in_(["Участник", "Призер", "Победитель"]), 1)))
         diploms = func.count(case((Record.status.in_(["Призер", "Победитель"]), 1)))
         pobed = func.count(case((Record.status == "Победитель", 1)))
         priz = func.count(case((Record.status == "Призер", 1)))
 
+        # Выражения для склейки тольк нужных предметов
         condition_pobed_subjects = case(
             (Record.status == "Победитель", Event.subject),  # склеиваем только Победитель
             else_=None  # NULL значения будут пропущены group_concat
@@ -109,9 +149,23 @@ def get_filtered_users_vos(year: int, stage: str, statuses: list[str],
 
 
 def get_user_stats(id: str) -> list[str, str, int, str | None, int, int, int, int, int, float]:
+    """
+    По id (в формате UUID) юзера возвращает информацию о нем в виде списка:
+
+    id (str),
+    ФИО (str),
+    год выпуска (int),
+    профиль (str),
+    суммарный балл за ЕГЭ (int),
+    ср. балл ОГЭ (float),
+    кол-во побед (int),
+    кол-во призерств (int),
+    кол-во участий, % успешных выступлений (отношение дипломов к участиям) (int)
+
+    :param id:
+    :return: Список
+    """
     with get_session() as session:
-        # id, ФИО, Год выпуска, профиль, балл ЕГЭ, ср. балл ОГЭ, кол-во побед, кол-во призерств, кол-во участий,
-        # % успешных выступлений
         part = func.count(case((Record.status.in_(["Участник", "Призер", "Победитель"]), 1)))
         diploms = func.count(case((Record.status.in_(["Призер", "Победитель"]), 1)))
         pobed = func.count(case((Record.status == "Победитель", 1)))
@@ -137,7 +191,30 @@ def get_user_stats(id: str) -> list[str, str, int, str | None, int, int, int, in
         return list(records[0]) if len(records) == 1 else ['', '', 0, None, 0, 0, 0, 0, 0, 0.0]
 
 
-def get_user_records(id: str) -> dict[str, list]:
+def get_user_records(id: str) -> dict[str, list[list[tuple[str, tuple], list[list[str, str, int]]]]]:
+    """
+    Возвращает статистику участия и побед у юзера в виде словаря с ключами ``vos, rsosh, ege, oge, other`` и
+    значениями - списками, элементы которых имеют такой вид:
+
+    list[tuple[str, tuple], list[list[str, str, int]]]
+
+    list[
+        tuple[
+            str,   <--- Название, которое будет отображаться в элементе accrodion\n
+            tuple   <--- Ключ сортировки списка ниже
+        ],
+        list[
+            list[
+                str,   <--- Название предмета\n
+                str,   <--- Статус участия\n
+                int   <--- Баллы
+            ]
+        ]
+    ]
+
+    :param id:
+    :return: Большой словарь по описанию выше
+    """
     user = get_user_by_id(id)
     if user is None:
         return {

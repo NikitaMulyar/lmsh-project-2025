@@ -9,9 +9,13 @@ from rich.console import Console
 from rich.panel import Panel
 
 
-async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
-        -> list[dict[str, str | dict[str, list[str]]]] | None:
-    console = Console()
+async def save_vos_teams_data_by_year(year: int):
+    """
+    Сохраняет данные о команде Сборной Москвы на финале ВсОШ за заданный год в папку 'data/vos/finals/'.
+    :param year: год финала ВсОШ
+    :return:
+    """
+    console = Console()  # для красивого вывода статусов обработки в консоль
 
     parsed_data = []
     async with httpx.AsyncClient() as client:
@@ -69,48 +73,43 @@ async def save_vos_teams_data_by_year(year: int, return_l2sh_only=True) \
             if not span:
                 continue
 
-            title = ".".join(span.text.strip('\n \t').split('.')[1:]).strip('\n \t')
-            if title == 'ru':
+            title = ".".join(span.text.strip('\n \t').split('.')[1:]).strip('\n \t')  # Название предмета
+            if title == 'ru':  # Случайно попадается почта
                 continue
 
             data = {
                 'title': title,
                 'team': {}
             }
-            cur_tag = p.find_next_sibling()
-            while cur_tag and cur_tag.name != 'hr':
-                class_ = cur_tag.text.split()[0]
+            cur_tag = p.find_next_sibling()  # Перемещение к следующему тегу
+            while cur_tag and cur_tag.name != 'hr':  # Двигаемся до конца страницы, пока можем
+                class_ = cur_tag.text.split()[0]  # Класс
 
                 cur_tag = cur_tag.find_next_sibling()
                 for student in cur_tag.find_all('li'):
                     fio, school = student.text.split(',', maxsplit=1)
                     fio = fio.strip('\n \t')
                     school = school.strip('\n \t')
-                    if not return_l2sh_only:
-                        if not data['team'].get(class_):
-                            data['team'][class_] = []
-
+                    if not data['team'].get(class_):
+                        data['team'][class_] = []
                         data['team'][class_].append([fio, school])
-                    elif return_l2sh_only and 'лицей' in school.lower() \
-                            and 'вторая школа' in school.lower():
-                        if not data['team'].get(class_):
-                            data['team'][class_] = []
 
-                        data['team'][class_].append([fio, school])
                 cur_tag = cur_tag.find_next_sibling()
             parsed_data.append(data)
 
-    if not return_l2sh_only:
-        file = open(f'data/vos/finals/teams_{year}.json', mode='w')
-        json.dump(parsed_data, file, ensure_ascii=False, indent=4)
-        file.close()
-
-    return parsed_data
+    file = open(f'data/vos/finals/teams_{year}.json', mode='w')
+    json.dump(parsed_data, file, ensure_ascii=False, indent=4)
+    file.close()
 
 
-async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
-        -> list[dict[str, str | dict[str, list[str]]]] | None:
-    console = Console()
+async def save_vos_results_data_by_year(year: int):
+    """
+    Сохраняет данные о результатах Сборной Москвы на финале ВсОШ за заданный год в папку 'data/vos/finals/'.
+    :param year: год финала ВсОШ
+    :return:
+    """
+
+    console = Console()  # для красивого вывода статусов обработки в консоль
 
     parsed_data = []
     async with httpx.AsyncClient() as client:
@@ -168,8 +167,8 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
             if not span:
                 continue
 
-            title = ".".join(span.text.strip('\n \t').split('.')[1:]).strip('\n \t')
-            if title == 'ru':
+            title = ".".join(span.text.strip('\n \t').split('.')[1:]).strip('\n \t')  # Название предмета
+            if title == 'ru':  # Случайно попадается почта
                 continue
 
             data = {
@@ -177,11 +176,11 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
                 'pobed': {},
                 'priz': {}
             }
-            cur_status = None
+            cur_status = None  # Храним текущий статус, поскольку он будет меняться
             cur_tag = p.find_next_sibling()
-            while cur_tag and cur_tag.name != 'hr':
+            while cur_tag and cur_tag.name != 'hr':  # Двигаемся до конца страницы, пока можем
                 if 'победител' in cur_tag.text.lower():
-                    cur_status = 'pobed'
+                    cur_status = 'pobed'  # Запоминаем текущий статус, поскольку после него идет список людей с ним
                     cur_tag = cur_tag.find_next_sibling()
                     continue
                 elif 'призер' in cur_tag.text.lower().replace('ё', 'е'):
@@ -193,10 +192,11 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
 
                 cur_tag = cur_tag.find_next_sibling()
                 for student in cur_tag.find_all('li'):
-                    fio, school = student.text.split(',', maxsplit=1)
+                    fio, school = student.text.split(',', maxsplit=1)  # На всякий случай делаем только 1 сплит
                     fio = fio.strip('\n \t')
 
-                    unique_class = list(re.finditer(r'\s\((\d\d?) класс\)', fio))
+                    unique_class = list(re.finditer(r'\s\((\d\d?) класс\)', fio))  # Некоторые участники
+                    # выступают за класс старше, поэтому в скобках у них написан их настоящий класс. Запоминаем
                     if len(unique_class) == 1:
                         idx_to_cut = unique_class[0].span()[0]
                         unique_class = unique_class[0].group(1)
@@ -206,23 +206,13 @@ async def save_vos_results_data_by_year(year: int, return_l2sh_only=True) \
                     fio = fio[:idx_to_cut]
 
                     school = school.strip('\n \t')
-                    if not return_l2sh_only:
-                        if not data[cur_status].get(unique_class):
-                            data[cur_status][unique_class] = []
+                    if not data[cur_status].get(unique_class):
+                        data[cur_status][unique_class] = []
+                    data[cur_status][unique_class].append([fio, school])
 
-                        data[cur_status][unique_class].append([fio, school])
-                    elif return_l2sh_only and 'лицей' in school.lower() \
-                            and 'вторая школа' in school.lower():
-                        if not data[cur_status].get(unique_class):
-                            data[cur_status][unique_class] = []
-
-                        data[cur_status][unique_class].append([fio, school])
                 cur_tag = cur_tag.find_next_sibling()
             parsed_data.append(data)
 
-    if not return_l2sh_only:
-        file = open(f'data/vos/finals/results_{year}.json', mode='w')
-        json.dump(parsed_data, file, ensure_ascii=False, indent=4)
-        file.close()
-
-    return parsed_data
+    file = open(f'data/vos/finals/results_{year}.json', mode='w')
+    json.dump(parsed_data, file, ensure_ascii=False, indent=4)
+    file.close()

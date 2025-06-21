@@ -69,7 +69,7 @@
                                         <div class="sub-dropdown-wrapper">
                                             <div class="sub-dropdown">
                                                 {% for stage in stages %}
-                                                    <a href="/vos/{{ stage[1] }}/{{ year }}?index=fio" class="menu-item">
+                                                    <a href="/vos/{{ stage[1] }}/{{ year }}" class="menu-item">
                                                         <span>{{ stage[0] }}</span>
                                                     </a>
                                                 {% endfor %}
@@ -109,13 +109,13 @@
                     <li class="nav-item">
                         <div class="nav-button-wrapper">
                             <button class="nav-button">
-                                <span>Зарузка данных</span>
+                                <span>Загрузка данных</span>
                                 <i class="fas fa-chevron-down ml-2 text-xs"></i>
                             </button>
                         </div>
                         <div class="dropdown-wrapper" style="min-width: 200px">
                             <div class="dropdown">
-                                 {% for cat in categories[1:] %}
+                                 {% for cat in categories %}
                                     <a href="/upload/{{ cat[1] }}" class="menu-item">
                                         <span>{{ cat[0] }}</span>
                                     </a>

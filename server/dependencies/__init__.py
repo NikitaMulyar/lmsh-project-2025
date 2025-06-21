@@ -23,19 +23,36 @@ if not os.path.exists('data/vos/finals/'):
     os.mkdir('data/vos/finals/')
 
 
-async def save_vos_finals_data(year_start, year_end):
+async def save_vos_finals_data(year_start: int, year_end: int):
+    """
+    Сохраняет данные о команде и результатах Сборной Москвы на финале ВсОШ за заданные года.
+    :param year_start: начальный год
+    :param year_end: последний год
+    :return:
+    """
     tasks = []
     for year in range(year_start, year_end + 1):
-        tasks.append(save_vos_teams_data_by_year(year, return_l2sh_only=False))
-        tasks.append(save_vos_results_data_by_year(year, return_l2sh_only=False))
-    return await asyncio.gather(*tasks)
+        tasks.append(save_vos_teams_data_by_year(year))
+        tasks.append(save_vos_results_data_by_year(year))
+    await asyncio.gather(*tasks)
 
 
-async def fill_database_vos_finals_data(year_start, year_end):
-    console = Console()
+async def fill_database_vos_finals_data(year_start: int, year_end: int):
+    """
+    Использует данные из папки `data/vos/finals/` для занесения лицеистов и их результатов в базу данных
+    :param year_start: начальный год
+    :param year_end: последний год
+    :return:
+    """
+
+    console = Console()  # для красивого вывода статусов обработки в консоль
     events_rsosh_levels = json.load(open('static/json/events_rsosh_levels.json', mode='rb'))
+    # соответствие rsosh_level для типа мероприятия
 
     statuses = {}
+    # Словарь с каскадными ключами:
+    # год (int) -> предмет (str) -> ФИО (str)
+    # Значение - 'pobed' или 'priz'
     for year in range(year_start, year_end + 1):
         statuses[year] = {}
         results = json.load(open(f'data/vos/finals/results_{year}.json', mode='rb'))
@@ -57,14 +74,18 @@ async def fill_database_vos_finals_data(year_start, year_end):
                                  'ВсОШ', 'ЗЭ ВсОШ',
                                  'ЗЭ', 'Заключительный',
                                  'vos', 'finals')
+            # Создание события, чтобы использовать его id для создания записей
             for number in subject['team']:
                 for student in subject['team'][number]:
+                    # Рассматриваем только второшкольников
                     if 'лицей' in student[1].lower() \
                             and 'вторая школа' in student[1].lower():
                         user = get_user_by_fio(student[0])
                         if user is None:
                             user = create_user(student[0],
                                                year + 11 - int(number), None)
+                        # Лицеист мог стать ПиПом в разных предметах, поэтому важно не дублировать его.
+                        # После этого вместо кучи ифов пытаемся достать статус участия. Если нет - то он был участником.
                         try:
                             won = statuses[year][subject['title']][student[0]]
                         except Exception:
@@ -87,5 +108,11 @@ async def fill_database_vos_finals_data(year_start, year_end):
 
 
 async def prepare_data(year_start=2021, year_end=2025):
+    """
+    Вызывает функции ``save_vos_finals_data`` и ``fill_database_vos_finals_data``
+    :param year_start: начальный год
+    :param year_end: последний год
+    :return:
+    """
     await save_vos_finals_data(year_start, year_end)
     await fill_database_vos_finals_data(year_start, year_end)
