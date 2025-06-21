@@ -1,6 +1,7 @@
 import os
 from contextlib import contextmanager
 
+from dotenv import load_dotenv
 from sqlalchemy import orm, create_engine
 from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
@@ -16,6 +17,8 @@ SessionLocal = None
 
 def create_db():
     global SessionLocal
+
+    load_dotenv()
 
     DB_FILE = 'db/' + os.getenv("DB_FILE", "sqlite.db")
     DATABASE_URL = f"sqlite:///{DB_FILE}?check_same_thread=False"

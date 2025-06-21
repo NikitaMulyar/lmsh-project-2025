@@ -131,7 +131,7 @@
                 </div>
             </div>
         </div>
-
+        {% set count = namespace(part_sum=0, diplom_sum=0, podeb_sum=0, priz_sum=0) %}
         {% if table_index == 'fio' %}
             <div class="table-wrapper">
                 <table class="participants-table">
@@ -154,9 +154,11 @@
                             </td>
                             <td>
                                 <div class="participation-count">{{ student[3] }}</div>
+                                {% set count.part_sum = count.part_sum + student[3] %}
                             </td>
                             <td>
                                 <div class="diploma-count">{{ student[4] }}</div>
+                                {% set count.diplom_sum = count.diplom_sum + student[4] %}
                             </td>
                             <td>
                                 {% for subj in student[6] %}
@@ -164,6 +166,7 @@
                                         <i class="fas fa-trophy mr-1"></i> {{ subj }}
                                     </div>
                                 {% endfor %}
+                                {% set count.podeb_sum = count.podeb_sum + student[6]|length %}
                             </td>
                             <td>
                                 {% for subj in student[8] %}
@@ -171,9 +174,31 @@
                                         <i class="fas fa-medal mr-1"></i> {{ subj }}
                                     </div>
                                 {% endfor %}
+                                {% set count.priz_sum = count.priz_sum + student[8]|length %}
                             </td>
                         </tr>
                     {% endfor %}
+                    <tr>
+                        <td>
+                            <div class="font-medium"><b>Сумма</b></div>
+                        </td>
+                        <td>
+                            <div class="participation-count">{{ count.part_sum }}</div>
+                        </td>
+                        <td>
+                            <div class="diploma-count">{{ count.diplom_sum }}</div>
+                        </td>
+                        <td>
+                            <div class="winner-badge-2">
+                                <i class="fas fa-trophy mr-1"></i> {{ count.podeb_sum }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="prize-badge-2">
+                                <i class="fas fa-medal mr-1"></i> {{ count.priz_sum }}
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -197,22 +222,47 @@
                             </td>
                             <td>
                                 <div class="participation-count">{{ subject[1] }}</div>
+                                {% set count.part_sum = count.part_sum + subject[1] %}
                             </td>
                             <td>
                                 <div class="diploma-count">{{ subject[2] }}</div>
+                                {% set count.diplom_sum = count.diplom_sum + subject[2] %}
                             </td>
                             <td>
                                 <div class="winner-badge-2">
                                     <i class="fas fa-trophy mr-1"></i> {{ subject[3] }}
                                 </div>
+                                {% set count.podeb_sum = count.podeb_sum + subject[3] %}
                             </td>
                             <td>
                                 <div class="prize-badge-2">
                                     <i class="fas fa-medal mr-1"></i> {{ subject[4] }}
                                 </div>
+                                {% set count.priz_sum = count.priz_sum + subject[4] %}
                             </td>
                         </tr>
                     {% endfor %}
+                    <tr>
+                        <td>
+                            <div class="font-medium"><b>Сумма</b></div>
+                        </td>
+                        <td>
+                            <div class="participation-count">{{ count.part_sum }}</div>
+                        </td>
+                        <td>
+                            <div class="diploma-count">{{ count.diplom_sum }}</div>
+                        </td>
+                        <td>
+                            <div class="winner-badge-2">
+                                <i class="fas fa-trophy mr-1"></i> {{ count.podeb_sum }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="prize-badge-2">
+                                <i class="fas fa-medal mr-1"></i> {{ count.priz_sum }}
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

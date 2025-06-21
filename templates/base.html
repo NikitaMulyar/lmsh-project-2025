@@ -106,7 +106,23 @@
                             </div>
                         </li>
                     {% endfor %}
-
+                    <li class="nav-item">
+                        <div class="nav-button-wrapper">
+                            <button class="nav-button">
+                                <span>Зарузка данных</span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="dropdown-wrapper" style="min-width: 200px">
+                            <div class="dropdown">
+                                 {% for cat in categories[1:] %}
+                                    <a href="/upload/{{ cat[1] }}" class="menu-item">
+                                        <span>{{ cat[0] }}</span>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </nav>
         </div>

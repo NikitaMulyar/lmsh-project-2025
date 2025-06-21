@@ -51,7 +51,7 @@ async def fill_database_vos_finals_data(year_start, year_end):
     for year in range(year_start, year_end + 1):
         teams = json.load(open(f'data/vos/finals/teams_{year}.json', mode='rb'))
         for subject in teams:
-            event = create_event(f'ЗЭ ВсОШ {year} по {subject['title']}',
+            event = create_event(f'ЗЭ ВсОШ по {subject['title']}',
                                  subject['title'], events_rsosh_levels['ЗЭ ВсОШ'],
                                  year, None,
                                  'ВсОШ', 'ЗЭ ВсОШ',

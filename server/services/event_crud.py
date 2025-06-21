@@ -26,7 +26,7 @@ def get_vos_subjects_list(year: int, stage: str) -> list[str]:
         ).filter(
             Event.year == year,
             Event.english_stage_code == stage,
-            Event.olymp == 'ЗЭ ВсОШ'
+            Event.english_olymp_code == 'vos'
         ).order_by(
             Event.subject
         )

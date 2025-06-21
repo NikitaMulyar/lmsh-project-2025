@@ -29,7 +29,7 @@ def get_vos_stats(year: int, stage: str) -> list[int, int, int, int]:
         ).join(User).join(Event).filter(
             Event.year == year,
             Event.english_stage_code == stage,
-            Event.olymp == 'ЗЭ ВсОШ'
+            Event.english_olymp_code == 'vos'
         ).group_by(Event.year)
 
         records = query.all()
@@ -63,7 +63,7 @@ def get_filtered_subjects_vos(year: int, stage: str, statuses: list[str],
         ).join(User).join(Event).filter(
             Event.year == year,
             Event.english_stage_code == stage,
-            Event.olymp == 'ЗЭ ВсОШ'
+            Event.english_olymp_code == 'vos'
         )
 
         if len(subjects) > 0:

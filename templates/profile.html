@@ -1,10 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block content %}
+    <link rel="stylesheet" href="/static/css/profile.css"/>
+    <div class="profile-container">
+        <!-- Заголовок профиля -->
+        <div class="profile-header">
+            <div class="profile-info">
+                <div class="avatar-container">
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="user-details">
+                    <h1 class="user-name">{{ user_stats[1] }}</h1>
+                    <p class="text-lg text-slate-300">ID: {{ user_stats[0] }}</p>
+
+                    <div class="user-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Год выпуска: {{ user_stats[2] }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-school"></i>
+                            <span>Профиль: {{ user_stats[3] }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-medal"></i>
+                            <span>Балл ЕГЭ: {{ user_stats[4] }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-medal"></i>
+                            <span>Ср. балл ОГЭ: {{ user_stats[5] }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-value">{{ user_stats[6] }}</div>
+                    <div class="stat-label">Побед</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-value">{{ user_stats[7] }}</div>
+                    <div class="stat-label">Призерств</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ user_stats[8] }}</div>
+                    <div class="stat-label">Участий</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-value">{{ user_stats[9] }}%</div>
+                    <div class="stat-label">Успешных выступлений</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладки с результатами -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <div class="tab active" data-tab="vos">
+                    <i class="fas fa-trophy mr-2"></i> ВсОШ
+                </div>
+                <div class="tab" data-tab="rsosh">
+                    <i class="fas fa-list-ol mr-2"></i> РСОШ
+                </div>
+                <div class="tab" data-tab="ege">
+                    <i class="fas fa-book mr-2"></i> ЕГЭ
+                </div>
+                <div class="tab" data-tab="oge">
+                    <i class="fas fa-book-open mr-2"></i> ОГЭ
+                </div>
+                <div class="tab" data-tab="other">
+                    <i class="fas fa-star mr-2"></i> Прочее
+                </div>
+            </div>
+
+            <div class="tabs-content">
+                {% for cat in ['vos', 'rsosh', 'ege', 'oge', 'other'] %}
+                    {% set is_active = "" %}
+                    {% if loop.index0 == 0 %}
+                        {% set is_active = " active" %}
+                    {% endif %}
+                    <div class="tab-pane{{ is_active }}" id="{{ cat }}">
+                        {% for note_block in user_data[cat] %}
+                            <div class="accordion active">
+                                <div class="accordion-header">
+                                    <div class="accordion-title">
+                                        <i class="fas fa-calendar"></i>
+                                        {{ note_block[0][0] }}
+                                    </div>
+                                    <div class="accordion-icon">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <div class="accordion-content">
+                                    <table class="results-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Предмет</th>
+                                                <th>Статус</th>
+                                                <th>Баллы</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for note in note_block[1] %}
+                                                <tr>
+                                                    <td>{{ note[0]}}</td>
+                                                    {% set badge_type = "participant" %}
+                                                    {% if note[1] == 'Призер' %}
+                                                        {% set badge_type = "prize" %}
+                                                    {% elif note[1] == 'Победитель' or note[1] == 'Сдано' and
+                                                            ('ЕГЭ' in note_block[0][0] or 'ОГЭ' in note_block[0][0]) %}
+                                                        {% set badge_type = "winner" %}
+                                                    {% endif %}
+                                                    <td><span class="status-badge status-{{ badge_type }}">
+                                                        {{ note[1] }}</span></td>
+                                                    <td class="score-cell">{{ note[2] }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/profile.js"></script>
+{% endblock %}
