@@ -1,4 +1,3 @@
-import sqlalchemy
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func, case, or_, cast, String
 
@@ -33,7 +32,8 @@ def get_user_by_id(id: str) -> User | None:
 
 def get_filtered_users_vos_finals(year: int, statuses: list[str],
                                   numbers: list[int], subjects: list[str]) \
-        -> list[list[str, str, int, int, int, int]]:
+        -> list[list[str, str, int, int, int, int, str, int, str]]:
+    # id, ФИО, Год выпуска, Участие, Дипломы, Победитель, <список предметов побед.>, Призер, <список предметов приз.>
     with get_session() as session:
         graduate_years = [year + 11 - number for number in numbers]
 
@@ -41,6 +41,15 @@ def get_filtered_users_vos_finals(year: int, statuses: list[str],
         diploms = func.count(case((Record.status.in_(["Призер", "Победитель"]), 1)))
         pobed = func.count(case((Record.status == "Победитель", 1)))
         priz = func.count(case((Record.status == "Призер", 1)))
+
+        condition_pobed_subjects = case(
+            (Record.status == "Победитель", Event.subject),  # склеиваем только Победитель
+            else_=None  # NULL значения будут пропущены group_concat
+        )
+        condition_priz_subjects = case(
+            (Record.status == "Призер", Event.subject),  # склеиваем только Победитель
+            else_=None  # NULL значения будут пропущены group_concat
+        )
 
         # Предикаты для фильтрации по агрегатам
         having_clauses = []
@@ -62,7 +71,10 @@ def get_filtered_users_vos_finals(year: int, statuses: list[str],
         query = session.query(
             User.id,
             fio_with_number,
-            part, diploms, pobed, priz
+            User.graduate_year,
+            part, diploms,
+            pobed, func.group_concat(condition_pobed_subjects, '$$'),
+            priz, func.group_concat(condition_priz_subjects, '$$')
         ).join(User).join(Event).filter(
             Event.year == year,
             Event.code == 'ЗЭ ВСОШ'
@@ -75,7 +87,7 @@ def get_filtered_users_vos_finals(year: int, statuses: list[str],
             query = query.where(User.graduate_year.in_(graduate_years))
 
         query = query.group_by(
-            User.id, fio_with_number
+            User.id, fio_with_number, User.graduate_year
         )
 
         if having_clauses:
@@ -83,4 +95,11 @@ def get_filtered_users_vos_finals(year: int, statuses: list[str],
 
         query = query.order_by(User.fio)
         records = [[el for el in row] for row in query.all()]
+        for i in range(len(records)):
+            records[i] = \
+            records[i][:-3] + \
+            ([sorted(records[i][-3].split('$$'))] if records[i][-3] else [[]]) + \
+            [records[i][-2]] + \
+            ([sorted(records[i][-1].split('$$'))] if records[i][-1] else [[]])
+
         return records

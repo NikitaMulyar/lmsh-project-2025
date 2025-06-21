@@ -38,6 +38,7 @@ def get_vos_finals_stats(year: int) -> list[int, int, int, int]:
 def get_filtered_subjects_vos_finals(year: int, statuses: list[str],
                                      numbers: list[int], subjects: list[str]) \
         -> list[list[str, int, int, int, int]]:
+    # Предмет, Участие, Дипломы, Победитель, Призер
     with get_session() as session:
         graduate_years = [year + 11 - number for number in numbers]
 

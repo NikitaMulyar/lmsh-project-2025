@@ -14,7 +14,9 @@
                         primary: '#3b82f6',
                         secondary: '#8b5cf6',
                         dark: '#1e293b',
-                        header: '#0c4a6e'
+                        header: '#0c4a6e',
+                        glass: 'rgba(30, 41, 59, 0.7)',
+                        'glass-light': 'rgba(15, 23, 42, 0.5)'
                     }
                 }
             }
@@ -29,12 +31,14 @@
         <div class="flex flex-col md:flex-row justify-around items-center">
 
             <!-- Логотип с иконкой -->
-            <div class="logo-container mb-4 md:mb-0">
-                <div class="logo-icon">
-                    <i class="fas fa-chart-line text-white text-xl"></i>
+            <a href="/">
+                <div class="logo-container mb-4 md:mb-0">
+                    <div class="logo-icon">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div class="logo-text">L2Stats</div>
                 </div>
-                <div class="logo-text">L2Stats</div>
-            </div>
+            </a>
 
             <!-- Навигационное меню -->
             <nav>
@@ -110,6 +114,10 @@
 </header>
 
 {% block content %}{% endblock %}
+
+<footer>
+    <p>© 2025 L2Stats, дизайн и разработка - Муляр Никита</p>
+</footer>
 
 </body>
 </html>
