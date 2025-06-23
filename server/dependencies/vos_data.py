@@ -92,7 +92,7 @@ async def save_vos_teams_data_by_year(year: int):
                     school = school.strip('\n \t')
                     if not data['team'].get(class_):
                         data['team'][class_] = []
-                        data['team'][class_].append([fio, school])
+                    data['team'][class_].append([fio, school])
 
                 cur_tag = cur_tag.find_next_sibling()
             parsed_data.append(data)
